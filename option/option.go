@@ -204,3 +204,41 @@ func (o *Option[T]) UnmarshalJSON(data []byte) error {
 	*o = Some(v)
 	return nil
 }
+
+// Map converts an Option[T] -> Option[R] by invoking the mapper function. If
+// the given option is None, then None is returned.
+func Map[T, R any](opt Option[T], fn gonads.Function[T, R]) Option[R] {
+	if !opt.exists {
+		return None[R]()
+	}
+	return Some(fn(opt.val))
+}
+
+// MapOr converts an Option[T] -> Option[R] by invoking the mapper function. If
+// the given option is None, the provided fallback is returned.
+func MapOr[T, R any](opt Option[T], fallback R, fn gonads.Function[T, R]) R {
+	if !opt.exists {
+		return fallback
+	}
+	return fn(opt.val)
+}
+
+// FlatMap converts an Option[T] -> Option[R] by invoking the mapper function. FlatMap
+// differs from Map in the mapper function returns an Option[R] instead of a value. If
+// the given Option is None, then None is returned.
+func FlatMap[T, R any](opt Option[T], fn func(T) Option[R]) Option[R] {
+	if !opt.exists {
+		return None[R]()
+	}
+	return fn(opt.val)
+}
+
+// FlatMapOr converts an Option[T] -> Option[R] by invoking the mapper function. FlatMap
+// differs from Map in the mapper function returns an Option[R] instead of a value. If
+// the given Option is None, the default fallback value is returned.
+func FlatMapOr[T, R any](opt Option[T], fallback R, fn func(T) Option[R]) Option[R] {
+	if !opt.exists {
+		return Some(fallback)
+	}
+	return fn(opt.val)
+}
