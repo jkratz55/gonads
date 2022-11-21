@@ -71,7 +71,7 @@ func (r Result[T]) IfError(fn func(err error)) {
 // Ok converts the value of the Result into an Option. If the Result was a failure
 // returns None. Otherwise, returns Some(T)
 func (r Result[T]) Ok() option.Option[T] {
-	if r.err != nil {
+	if r.err == nil {
 		return option.Some(r.val)
 	}
 	return option.None[T]()
